@@ -1,3 +1,4 @@
+package mynewproject;
 import java.util.Scanner;
 
 class Device {
