@@ -1,36 +1,35 @@
-// Parent Class
-class Animal {
-    String name;
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
-    Animal(String name) {
-        this.name = name;
+class ThreadSafeStack<E> {
+    private final Deque<E> stack = new ArrayDeque<>();
+    private final ReentrantLock lock = new ReentrantLock();
+
+    public void push(E item) {
+        lock.lock();
+        try { stack.push(item); } 
+        finally { lock.unlock(); }
     }
 
-    void makeSound() {
-        System.out.println(name + " makes a sound.");
+    public E pop() {
+        lock.lock();
+        try { return stack.isEmpty() ? null : stack.pop(); } 
+        finally { lock.unlock(); }
+    }
+
+    public boolean isEmpty() {
+        lock.lock();
+        try { return stack.isEmpty(); } 
+        finally { lock.unlock(); }
     }
 }
 
-// Child Class
-class Dog extends Animal {
-
-    Dog(String name) {
-        super(name); // calling parent constructor
-    }
-
-    @Override
-    void makeSound() {
-        System.out.println(name + " barks: Woof Woof!");
-    }
-}
-
-// Main Class
 public class Main {
     public static void main(String[] args) {
-        Animal a1 = new Animal("Generic Animal");
-        Dog d1 = new Dog("Buddy");
-
-        a1.makeSound();  
-        d1.makeSound();  
+        ThreadSafeStack<Integer> s = new ThreadSafeStack<>();
+        s.push(10);
+        s.push(20);
+        System.out.println("Popped: " + s.pop());
+        System.out.println("Empty: " + s.isEmpty());
     }
 }
